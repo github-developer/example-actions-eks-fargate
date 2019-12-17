@@ -4,7 +4,7 @@ An example workflow that uses [GitHub Actions](https://help.github.com/en/catego
 
 ## Prerequisites
 
-1. Create an EKS cluster, e.g. using [eks-fargate-setup.sh script](https://github.com/github-developer/example-actions-eks/blob/master/scripts/eks-fargate-setup.sh).
+1. Create an EKS on Fargate cluster using the [setup script](https://github.com/github-developer/example-actions-eks/blob/master/scripts/eks-fargate-setup.sh): `bash eks-fargate-setup.sh`
 1. Create an ECR repo called `example-eks`
 
 ## Secrets
