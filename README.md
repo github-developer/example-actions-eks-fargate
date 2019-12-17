@@ -1,10 +1,10 @@
-# Example GitHub Actions workflow to deploy to Amazon EKS
+# Example GitHub Actions workflow to deploy to Amazon EKS on Fargate
 
-An example workflow that uses [GitHub Actions](https://help.github.com/en/categories/automating-your-workflow-with-github-actions) to build [a static website](app/site/) into a container image tagged with the git sha, push that image to Amazon Elastic Container Registry, and deploy to Amazon EKS using a simple Kubernetes Deployment and Service yaml with the image tag injected by Kustomize.
+An example workflow that uses [GitHub Actions](https://help.github.com/en/categories/automating-your-workflow-with-github-actions) to build [a static website](app/site/) into a container image tagged with the git sha, push that image to Amazon Elastic Container Registry, and deploy to Amazon EKS on using a simple Kubernetes Deployment and Service yaml with the image tag injected by Kustomize. An Ingress will create the needed ALB.
 
 ## Prerequisites
 
-1. Create an EKS cluster, e.g. using [`eksctl create cluster`](https://eksctl.io/)
+1. Create an EKS cluster, e.g. using [eks-fargate-setup.sh script](https://github.com/github-developer/example-actions-eks/blob/master/scripts/eks-fargate-setup.sh).
 1. Create an ECR repo called `example-eks`
 
 ## Secrets
