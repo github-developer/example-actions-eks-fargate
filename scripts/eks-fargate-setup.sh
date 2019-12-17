@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CLUSTER_NAME=<your desired EKS cluster name>
-AWS_REGION=<your region that support EKS/Fargate>
+AWS_REGION=<your region that supports EKS/Fargate, e.g. eu-west-1>
 AWS_ACCESS_KEY_ID=$(awk '-F=' '/aws_access_key_id/ { print $2 }' ~/.aws/credentials)
 AWS_SECRET_ACCESS_KEY=$(awk '-F=' '/aws_secret_access_key/ { print $2 }' ~/.aws/credentials)
 
