@@ -77,8 +77,7 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingre
 kubectl get deployment.apps/alb-ingress-controller -n kube-system -o json | jq '.spec.template.spec.containers[0].args += ["--cluster-name='$CLUSTER_NAME'", "--aws-vpc-id='$AWS_VPC_ID'", "--aws-region='$AWS_REGION'"]' | kubectl apply -f -
 
 #I should be using Fine Grained IAM roles, but this AWS ACCESS KEY approach is much simpler to implement for me at the moment.
-kubectl get deployment.apps/alb-ingress-controller -n kube-system -o json | jq '.spec.template.spec.containers[0].env += [ { "name": "AWS_ACCESS_KEY_ID", "value": '$AWS_ACCESS_KEY_ID' }, { "name": "AWS_SECRET_ACCESS_KEY", "value": '$AWS_SECRET_ACCESS_KEY' } ]' | kubectl apply -f -
-
+kubectl get deployment.apps/alb-ingress-controller -n kube-system -o json | jq '.spec.template.spec.containers[0].env += [ { "name": "AWS_ACCESS_KEY_ID", "value": "'$AWS_ACCESS_KEY_ID'" }, { "name": "AWS_SECRET_ACCESS_KEY", "value": "'$AWS_SECRET_ACCESS_KEY'" } ]' | kubectl apply -f -
 #https://aws.amazon.com/blogs/opensource/introducing-fine-grained-iam-roles-service-accounts/
 #https://github.com/kubernetes-sigs/aws-alb-ingress-controller/issues/1092#issuecomment-561400256
 #https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html
