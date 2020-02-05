@@ -38,11 +38,12 @@ eksctl create cluster --name $CLUSTER_NAME --version 1.14 --fargate
 eksctl utils associate-iam-oidc-provider \
                --name $CLUSTER_NAME \
                --approve
+               
+kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.4/docs/examples/rbac-role.yaml
 
 curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.4/docs/examples/iam-policy.json
 
 POLICY_EXISTING=$(aws iam list-policies | jq -r '.[][] | select(.PolicyName=="ALBIngressControllerIAMPolicy") | .Arn')
-
 if [ $POLICY_EXISTING ]
 then
 POLICY_ARN=$POLICY_EXISTING;
@@ -51,17 +52,14 @@ POLICY_ARN=$(aws iam create-policy --policy-name ALBIngressControllerIAMPolicy -
 fi
 echo "POLICY ARN: $POLICY_ARN"
 
-ROLE_NAME=$(kubectl -n kube-system describe configmap aws-auth | grep rolearn | cut -d'/' -f2)
-echo "ROLE NAME: $ROLE_NAME"
+eksctl create iamserviceaccount \
+       --cluster=$CLUSTER_NAME \
+       --namespace=kube-system \
+       --name=alb-ingress-controller \
+       --attach-policy-arn=$POLICY_ARN \
+       --override-existing-serviceaccounts \
+       --approve
 
-aws iam attach-role-policy \
---policy-arn $POLICY_ARN \
---role-name $ROLE_NAME 
-
-kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.4/docs/examples/rbac-role.yaml
-
-kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.4/docs/examples/alb-ingress-controller.yaml
-
-kubectl get deployment.apps/alb-ingress-controller -n kube-system -o json | jq '.spec.template.spec.containers[0].args += ["--cluster-name='$CLUSTER_NAME'", "--aws-region='$AWS_REGION'"]' | kubectl apply -f -
-
-kubectl get deployment.apps/alb-ingress-controller -n kube-system -o json | jq '.spec.template.spec.containers[0].env += [ { "name": "AWS_ACCESS_KEY_ID", "value": "'$AWS_ACCESS_KEY_ID'" }, { "name": "AWS_SECRET_ACCESS_KEY", "value": "'$AWS_SECRET_ACCESS_KEY'" } ]' | kubectl apply -f -
+curl -sS "https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.4/docs/examples/alb-ingress-controller.yaml" \
+     | sed "s/# - --cluster-name=devCluster/- --cluster-name=$CLUSTER_NAME/g" \
+     | kubectl apply -f -
