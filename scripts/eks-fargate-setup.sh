@@ -32,6 +32,7 @@ aws iam attach-role-policy --role-name AmazonEKSFargatePodExecutionRole --policy
 #create the EKS Fargate cluster
 eksctl create cluster --name $CLUSTER_NAME --version 1.14 --fargate
 
+#https://aws.amazon.com/blogs/opensource/kubernetes-ingress-aws-alb-ingress-controller/
 #https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html
 eksctl utils associate-iam-oidc-provider \
                --cluster $CLUSTER_NAME \
