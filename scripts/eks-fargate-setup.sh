@@ -58,4 +58,6 @@ eksctl create iamserviceaccount \
 
 curl -sS "https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.4/docs/examples/alb-ingress-controller.yaml" \
      | sed "s/# - --cluster-name=devCluster/- --cluster-name=$CLUSTER_NAME/g" \
+     | sed "s/# - --aws-region=us-west-1/- --aws-region=$AWS_REGION/g" \
+     | sed "s/# - --aws-vpc-id=vpc-xxxxxx/- --aws-vpc-id=$VPC_ID/g" \
      | kubectl apply -f -
