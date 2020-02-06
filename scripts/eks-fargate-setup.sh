@@ -1,14 +1,13 @@
 #!/bin/bash
 
-CLUSTER_NAME=<your desired EKS cluster name>
-AWS_REGION=<your region that supports EKS/Fargate, e.g. eu-west-1>
-#this blog is an excellent reference: https://aws.amazon.com/blogs/opensource/kubernetes-ingress-aws-alb-ingress-controller/
+CLUSTER_NAME=jpadams-eks-fargate-feb5
+AWS_REGION=eu-west-1
+#assumes your AWS creds are in ~/.aws/credentials
 
 #check for needed commands
 command -v eksctl >/dev/null 2>&1 || { echo >&2 "I require eksctl but it's not installed.  Aborting."; exit 1; }
 command -v aws >/dev/null 2>&1 || { echo >&2 "I require the aws cli but it's not installed.  Aborting."; exit 1; }
 command -v jq >/dev/null 2>&1 || { echo >&2 "I require jq but it's not installed.  Aborting."; exit 1; }
-command -v sed >/dev/null 2>&1 || { echo >&2 "I require sed but it's not installed.  Aborting."; exit 1; }
 command -v kubectl >/dev/null 2>&1 || { echo >&2 "I require kubectl but it's not installed.  Aborting."; exit 1; }
 
 #https://docs.aws.amazon.com/eks/latest/userguide/pod-execution-role.html
@@ -35,12 +34,12 @@ eksctl create cluster --name $CLUSTER_NAME --version 1.14 --fargate
 
 #https://docs.aws.amazon.com/eks/latest/userguide/enable-iam-roles-for-service-accounts.html
 eksctl utils associate-iam-oidc-provider \
-               --name $CLUSTER_NAME \
+               --cluster $CLUSTER_NAME \
                --approve
                
 kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.4/docs/examples/rbac-role.yaml
 
-curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.4/docs/examples/iam-policy.json
+curl -sO https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.4/docs/examples/iam-policy.json
 
 POLICY_EXISTING=$(aws iam list-policies | jq -r '.[][] | select(.PolicyName=="ALBIngressControllerIAMPolicy") | .Arn')
 if [ $POLICY_EXISTING ]
@@ -49,7 +48,6 @@ POLICY_ARN=$POLICY_EXISTING;
 else
 POLICY_ARN=$(aws iam create-policy --policy-name ALBIngressControllerIAMPolicy --policy-document file://iam-policy.json | jq -r '.Policy.Arn')
 fi
-echo "POLICY ARN: $POLICY_ARN"
 
 eksctl create iamserviceaccount \
        --cluster=$CLUSTER_NAME \
