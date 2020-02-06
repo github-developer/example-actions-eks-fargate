@@ -2,7 +2,6 @@
 
 CLUSTER_NAME=jpadams-eks-fargate-feb5
 AWS_REGION=eu-west-1
-#assumes your AWS creds are in ~/.aws/credentials
 
 #check for needed commands
 command -v eksctl >/dev/null 2>&1 || { echo >&2 "I require eksctl but it's not installed.  Aborting."; exit 1; }
