@@ -1,7 +1,7 @@
 #!/bin/bash
 
-CLUSTER_NAME=jpadams-eks-fargate-feb5
-AWS_REGION=eu-west-1
+CLUSTER_NAME=<your desired EKS cluster name>
+AWS_REGION=<your region that supports EKS/Fargate, e.g. eu-west-1>
 
 #check for needed commands
 command -v eksctl >/dev/null 2>&1 || { echo >&2 "I require eksctl but it's not installed.  Aborting."; exit 1; }
